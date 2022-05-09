@@ -148,9 +148,6 @@ def mainMenu():
             file = asksaveasfile(initialfile='Untitled.csv',
                                  defaultextension=".csv").name
             MatricesCalculator.exportMatrix(result, file)
-        # else:
-        #     print("No matrices defined")
-        #     mainMenu()
         endProcess = input("Enter 1 to choose another operation or any key to terminate\n")
         if endProcess != "1":
             break
