@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.filedialog import asksaveasfile
-from Application.MatricesCalculator import MatricesCalculator
-from Logic.Matrix import Matrix
-
+from MatricesCalculator import MatricesCalculator
+from Matrix import Matrix
 
 def getElements():
     try:
@@ -19,36 +18,87 @@ def getElements():
             (format(matrix[i][j]))
     return Matrix.listToObject(matrix)
 
-
-def getOperation(matrixA, matrixB, matrixC):
+def getOperation(matrixA,matrixB,matrixC):
     try:
         operation = int(input("Please choose an operation to be executed. Enter the number of the operation\n"
-                              "1- Add matrices\n2- Sub matrices\n3- Multiply matrices\n4- Transpose matrix\n5- Find "
-                              "the "
-                              "determinant "
-                              "\n6- Find Reduced Row Echelon Form RREF\n7- Solve linear system\n"))
+                           "1- Add matrices\n2- Sub matrices\n3- Multiply matrices\n4- Transpose matrix\n5- Find "
+                           "the "
+                           "determinant "
+                           "\n6- Find Reduced Row Echelon Form RREF\n7- Solve linear system\n"))
     except ValueError:
         print("Invalid input. Please try again!")
-        getOperation(matrixA, matrixB, matrixC)
+        getOperation(matrixA,matrixB,matrixC)
     else:
         if operation == 1:
-            return MatricesCalculator.addMatrices(matrixA, matrixB)
+            if validateOperation():
+                return MatricesCalculator.addMatrices(matrixA, matrixB)
+            return getOperation(matrixA,matrixB,matrixC)
         elif operation == 2:
-            return MatricesCalculator.subtractMatrices(matrixA, matrixB)
+            if validateOperation():
+                return MatricesCalculator.subtractMatrices(matrixA, matrixB)
+            return getOperation(matrixA,matrixB,matrixC)
         elif operation == 3:
-            return MatricesCalculator.multiplyMatrices(matrixA, matrixB)
+            if validateOperation():
+                return MatricesCalculator.multiplyMatrices(matrixA, matrixB)
+            return getOperation(matrixA,matrixB,matrixC)
         elif operation == 4:
-            return MatricesCalculator.transpose(matrixA)
+            if validateAdvancedOperation():
+               return MatricesCalculator.transpose(matrixA)
+            return getOperation(matrixA, matrixB, matrixC)
         elif operation == 5:
-            return MatricesCalculator.findDeterminant(matrixA)
+            if validateAdvancedOperation():
+               return MatricesCalculator.findDeterminant(matrixA)
+            return getOperation(matrixA, matrixB, matrixC)
         elif operation == 6:
-            return MatricesCalculator.findReducedRowEcholonForm(matrixA)
+            if validateAdvancedOperation():
+                return MatricesCalculator.findReducedRowEcholonForm(matrixA)
+            return getOperation(matrixA,matrixB,matrixC)
         elif operation == 7:
-            return MatricesCalculator.solveLinearSystem(matrixA)
+            if validateAdvancedOperation():
+                return MatricesCalculator.solveLinearSystem(matrixA)
+            return getOperation(matrixA,matrixB,matrixC)
 
+def whichMatrix():
+    if "matrixA" in matrices and "matrixB" not in matrices and "matrixC" not in matrices:
+        result = getOperation(matrixA, None, None)
+        return result
+    elif "matrixA" not in matrices and "matrixB" in matrices and "matrixC" not in matrices:
+        result = getOperation(matrixB, None, None)
+        return result
+    elif "matrixA" not in matrices and "matrixB" not in matrices and "matrixC" in matrices:
+        result = getOperation(matrixC, None, None)
+        return result
+    elif "matrixA" in matrices and "matrixB" in matrices and "matrixC" in matrices:
+        result = getOperation(matrixA, matrixB, matrixC)
+        return result
+    elif "matrixA" in matrices and "matrixB" in matrices and "matrixC" not in matrices:
+        result = getOperation(matrixA, matrixB, None)
+        return result
+    elif "matrixA" in matrices and "matrixB" not in matrices and "matrixC" in matrices:
+        result = getOperation(matrixA, matrixC, None)
+        return result
+    elif "matrixA" not in matrices and "matrixB" in matrices and "matrixC" in matrices:
+        result = getOperation(matrixB, matrixC, None)
+        return result
+    else:
+        print("No matrices defined. Please try again")
+        return mainMenu()
+
+def validateOperation():
+    if len(matrices) <2:
+        print("Can't perform the operation due to the number of defined matrices. Please choose another operation!\n")
+        return False
+    return True
+def validateAdvancedOperation():
+    if len(matrices)!=1:
+        print("Can't perform the operation due to the number of defined matrices. Please choose another operation!\n")
+        return False
+    return True
 
 def mainMenu():
-    matrices = {}
+    global matrixA, matrixB, matrixC
+    global matrices
+    matrices=[]
 
     print("Welcome to Matrix calculator\n"
           "This calculator enables you to:\n"
@@ -60,7 +110,7 @@ def mainMenu():
         try:
             define = int(input("Which matrix do you want to define.\n Enter 1 for matrix A or 2 for matrix "
                                "B or 3 for matrix C"))
-            if define != 1 and define != 2 and define != 3:
+            if define!=1 and define!=2 and define!=3 :
                 print("\nInvalid input, Please try again!\n")
                 mainMenu()
         except ValueError:
@@ -77,49 +127,34 @@ def mainMenu():
                 matrix = getElements()
             if define == 1:
                 MatricesCalculator.defineMatrixA(matrix)
-                matrixA = MatricesCalculator.getMatrixA()
-                matrices.setdefault("matrixA", matrixA)
+                matrixA=MatricesCalculator.getMatrixA()
+                matrices.append("matrixA")
             elif define == 2:
                 MatricesCalculator.defineMatrixB(matrix)
-                matrixB = MatricesCalculator.getMatrixB()
-                matrices.setdefault("matrixB", matrixB)
+                matrixB=MatricesCalculator.getMatrixB()
+                matrices.append("matrixB")
             elif define == 3:
                 MatricesCalculator.defineMatrixC(matrix)
-                matrixC = MatricesCalculator.getMatrixC()
-                matrices.setdefault("matrixC", matrixC)
-            nextMatrix = int(input("\nEnter 1 if you want to define another matrix or any key to proceed\n"))
+                matrixC=MatricesCalculator.getMatrixC()
+                matrices.append("matrixC")
+            nextMatrix = int(input("Enter 1 if you want to define another matrix or any key to proceed\n"))
             if nextMatrix != 1:
                 break
     while True:
-        # for i in matrices:
-        if "matrixB" in matrices and "matrixC" in matrices:
-            result = getOperation(matrixA, matrixB, matrixC)
-            print(result)
-            export = input("\nDo you want to export the resultant matrix? press y for yes\n")
-            if export == 'y':
-                file = asksaveasfile(initialfile='Untitled.csv',
-                                     defaultextension=".csv").name
-                MatricesCalculator.exportMatrix(result, file)
-        if "matrixB" in matrices and "matrixC" not in matrices:
-            result = getOperation(matrixA, matrixB, None)
-            print(result)
-            export = input("\nDo you want to export the resultant matrix? press y for yes\n")
-            if export == 'y':
-                file = asksaveasfile(initialfile='Untitled.csv',
-                                     defaultextension=".csv").name
-                MatricesCalculator.exportMatrix(result, file)
-        else:
-            result = getOperation(matrixA, None, None)
-            print(result)
-            export = input("\nDo you want to export the resultant matrix? press y for yes\n")
-            if export == 'y':
-                file = asksaveasfile(initialfile='Untitled.csv',
-                                     defaultextension=".csv").name
-                MatricesCalculator.exportMatrix(result, file)
-        endProcess = input("\nEnter 1 to choose another operation or any key to terminate\n")
+        result = whichMatrix()
+        print(result)
+        export = input("\nDo you want to export the resultant matrix? press y for yes\n")
+        if export == 'y':
+            file = asksaveasfile(initialfile='Untitled.csv',
+                                 defaultextension=".csv").name
+            MatricesCalculator.exportMatrix(result, file)
+        # else:
+        #     print("No matrices defined")
+        #     mainMenu()
+        endProcess = input("Enter 1 to choose another operation or any key to terminate\n")
         if endProcess != "1":
             break
-        edit = input("\nEnter 1 if you want to refactor the matrices or any key to proceed\n")
+        edit = input("Enter 1 if you want to refactor the matrices or any key to proceed\n")
         if edit == "1":
             mainMenu()
 
