@@ -4,18 +4,22 @@ from tkinter.filedialog import asksaveasfile
 from MatricesCalculator import MatricesCalculator
 from Matrix import Matrix
 
-def getElements():
+
+def getMatrix():
+    matrix = []
     try:
-        p = int(input("Enter the row number for matrix 1: "))
-        n = int(input("Enter the column number for matrix 1: "))
-        print("Enter the elements for matrix 1 :")
-        matrix = [[int(input()) for i in range(p)] for j in range(n)]
+        rowNum = int(input("Enter the row number for the matrix: "))
+        colNum = int(input("Enter the column number for matrix 1: "))
+        for i in range(rowNum):
+            row = list(map(int, input().split()))
+            if len(row) ==colNum:
+              matrix.append(row)
+            else:
+                print("Invalid input. Please try again")
+                getMatrix()
     except ValueError:
         print("Invalid input. Please try again")
-        getElements()
-    for i in range(n):
-        for j in range(p):
-            (format(matrix[i][j]))
+        getMatrix()
     return Matrix.listToObject(matrix)
 
 def getOperation(matrixA,matrixB,matrixC):
@@ -109,7 +113,7 @@ def mainMenu():
     while True:
         try:
             define = int(input("Which matrix do you want to define.\n Enter 1 for matrix A or 2 for matrix "
-                               "B or 3 for matrix C"))
+                               "B or 3 for matrix C "))
             if define!=1 and define!=2 and define!=3 :
                 print("\nInvalid input, Please try again!\n")
                 mainMenu()
@@ -124,7 +128,7 @@ def mainMenu():
                 file = filedialog.askopenfilenames()[0]
                 matrix = MatricesCalculator.importMatrix(file)
             else:
-                matrix = getElements()
+                matrix = getMatrix()
             if define == 1:
                 MatricesCalculator.defineMatrixA(matrix)
                 matrixA=MatricesCalculator.getMatrixA()
